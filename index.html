@@ -22,10 +22,11 @@
         const inclineAngle = 30;
         const lineLength = 500;
 
-        let ballX = 100;
-        let ballY = canvas.height - 100;
-        let ballSpeed = 3;
-        let ballRadius = 10;
+        const balls = [
+            { x: 100, y: canvas.height - 100, radius: 10, speed: 3 },
+            { x: 140, y: canvas.height - 140, radius: 10, speed: 3 }
+        ];
+
         let animation;
 
         function drawInclineLine() {
@@ -41,42 +42,42 @@
             ctx.stroke();
         }
 
-        function drawBall() {
+        function drawBall(ball) {
             ctx.beginPath();
-            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
             ctx.fillStyle = 'black';
             ctx.fill();
             ctx.closePath();
         }
 
-        function updateBallPosition() {
-            if (ballX + ballRadius < 100 + lineLength * Math.cos(Math.PI * inclineAngle / 180)) {
-                ballX += ballSpeed * Math.cos(Math.PI * inclineAngle / 180);
-                ballY -= ballSpeed * Math.sin(Math.PI * inclineAngle / 180);
+        function updateBallPosition(ball) {
+            if (ball.x + ball.radius < 100 + lineLength * Math.cos(Math.PI * inclineAngle / 180)) {
+                ball.x += ball.speed * Math.cos(Math.PI * inclineAngle / 180);
+                ball.y -= ball.speed * Math.sin(Math.PI * inclineAngle / 180);
             } else {
-                ballY += ballSpeed;
+                ball.y += ball.speed;
             }
         }
 
-        function resetBallPosition() {
-            ballX = 100;
-            ballY = canvas.height - 100;
+        function resetBallPosition(ball, index) {
+            ball.x = 100 + index * 40;
+            ball.y = canvas.height - 100 - index * 40;
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             drawInclineLine();
-            drawBall();
+            balls.forEach(drawBall);
 
-            updateBallPosition();
+            balls.forEach(updateBallPosition);
         }
 
         function startAnimation() {
             if (animation) {
                 clearInterval(animation);
             }
-            resetBallPosition();
+            balls.forEach(resetBallPosition);
             animation = setInterval(draw, 1000 / 60);
         }
     </script>
