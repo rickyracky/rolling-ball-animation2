@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rolling Ball Animation</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rolling Ball Animation</h1>
+    <button onclick="startAnimation()">Play</button>
+    <canvas id="animationCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const inclineAngle = 30;
+        const lineLength = 500;
+
+        let ballX = 100;
+        let ballY = canvas.height - 100;
+        let ballSpeed = 3;
+        let ballRadius = 10;
+        let animation;
+
+        function drawInclineLine() {
+            const startX = 100;
+            const startY = canvas.height - 100;
+
+            const endX = startX + lineLength * Math.cos(Math.PI * inclineAngle / 180);
+            const endY = startY - lineLength * Math.sin(Math.PI * inclineAngle / 180);
+
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function updateBallPosition() {
+            if (ballX + ballRadius < 100 + lineLength * Math.cos(Math.PI * inclineAngle / 180)) {
+                ballX += ballSpeed * Math.cos(Math.PI * inclineAngle / 180);
+                ballY -= ballSpeed * Math.sin(Math.PI * inclineAngle / 180);
+            } else {
+                ballY += ballSpeed;
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawInclineLine();
+            drawBall();
+
+            updateBallPosition();
+        }
+
+        function startAnimation() {
+            if (animation) {
+                return;
+            }
+            animation = setInterval(draw, 1000 / 60);
+        }
+    </script>
+</body>
+</html>
