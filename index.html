@@ -58,6 +58,11 @@
             }
         }
 
+        function resetBallPosition() {
+            ballX = 100;
+            ballY = canvas.height - 100;
+        }
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -69,8 +74,9 @@
 
         function startAnimation() {
             if (animation) {
-                return;
+                clearInterval(animation);
             }
+            resetBallPosition();
             animation = setInterval(draw, 1000 / 60);
         }
     </script>
