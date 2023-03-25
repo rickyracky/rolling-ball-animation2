@@ -23,8 +23,8 @@
         const lineLength = 500;
 
         const balls = [
-            { x: 100, y: canvas.height - 100, radius: 10, speed: 3, direction: 1, state: 'moving' },
-            { x: 600, y: 200, radius: 10, speed: 3, direction: -1, state: 'moving' }
+            { x: 100, y: canvas.height - 100, radius: 10, speed: 3, color: 'yellow', state: 'moving' },
+            { x: 100, y: canvas.height - 100, radius: 10, speed: 3, color: 'green', state: 'moving' }
         ];
 
         let animation;
@@ -45,43 +45,29 @@
         function drawBall(ball) {
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = ball.color;
             ctx.fill();
             ctx.closePath();
         }
 
-        function updateBallPosition(ball, index) {
+        function updateBallPosition(ball) {
             const inclineEndX = 100 + lineLength * Math.cos(Math.PI * inclineAngle / 180);
 
-            if (ball.state === 'moving') {
-                ball.x += ball.direction * ball.speed * Math.cos(Math.PI * inclineAngle / 180);
-                ball.y -= ball.direction * ball.speed * Math.sin(Math.PI * inclineAngle / 180);
+            if (ball.state === 'moving' && ball.x + ball.radius < inclineEndX) {
+                ball.x += ball.speed * Math.cos(Math.PI * inclineAngle / 180);
+                ball.y -= ball.speed * Math.sin(Math.PI * inclineAngle / 180);
+            } else if (ball.state === 'moving') {
+                ball.state = 'falling';
             }
 
-            if (index === 0 && ball.x + ball.radius >= inclineEndX) {
-                ball.state = 'collided';
-            } else if (index === 1 && ball.x - ball.radius <= 100) {
-                ball.state = 'collided';
-            }
-
-            if (ball.state === 'collided') {
-                if (index === 0) {
-                    resetBallPosition(ball, index);
-                } else {
-                    ball.y += ball.speed;
-                }
+            if (ball.state === 'falling') {
+                ball.y += ball.speed;
             }
         }
 
-        function resetBallPosition(ball, index) {
-            if (index === 0) {
-                ball.x = 100;
-                ball.y = canvas.height - 100;
-            } else {
-                ball.x = 600;
-                ball.y = 200;
-            }
-            ball.direction = index === 0 ? 1 : -1;
+        function resetBallPosition(ball) {
+            ball.x = 100;
+            ball.y = canvas.height - 100;
             ball.state = 'moving';
         }
 
