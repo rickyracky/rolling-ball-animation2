@@ -23,8 +23,8 @@
         const lineLength = 500;
 
         const balls = [
-            { x: 100, y: canvas.height - 100, radius: 10, speed: 3, direction: 1 },
-            { x: 600, y: canvas.height - 500, radius: 10, speed: 3, direction: -1 }
+            { x: 100, y: canvas.height - 100, radius: 10, speed: 3, direction: 1, state: 'moving' },
+            { x: 600, y: 200, radius: 10, speed: 3, direction: -1, state: 'moving' }
         ];
 
         let animation;
@@ -50,17 +50,26 @@
             ctx.closePath();
         }
 
-        function updateBallPosition(ball) {
+        function updateBallPosition(ball, index) {
             const inclineEndX = 100 + lineLength * Math.cos(Math.PI * inclineAngle / 180);
 
-            if (ball.direction === 1 && ball.x + ball.radius < inclineEndX) {
-                ball.x += ball.speed * Math.cos(Math.PI * inclineAngle / 180);
-                ball.y -= ball.speed * Math.sin(Math.PI * inclineAngle / 180);
-            } else if (ball.direction === -1 && ball.x - ball.radius > 100) {
-                ball.x -= ball.speed * Math.cos(Math.PI * inclineAngle / 180);
-                ball.y += ball.speed * Math.sin(Math.PI * inclineAngle / 180);
-            } else if (ball === balls[1]) {
-                ball.y += ball.speed;
+            if (ball.state === 'moving') {
+                ball.x += ball.direction * ball.speed * Math.cos(Math.PI * inclineAngle / 180);
+                ball.y -= ball.direction * ball.speed * Math.sin(Math.PI * inclineAngle / 180);
+            }
+
+            if (index === 0 && ball.x + ball.radius >= inclineEndX) {
+                ball.state = 'collided';
+            } else if (index === 1 && ball.x - ball.radius <= 100) {
+                ball.state = 'collided';
+            }
+
+            if (ball.state === 'collided') {
+                if (index === 0) {
+                    resetBallPosition(ball, index);
+                } else {
+                    ball.y += ball.speed;
+                }
             }
         }
 
@@ -70,9 +79,10 @@
                 ball.y = canvas.height - 100;
             } else {
                 ball.x = 600;
-                ball.y = canvas.height - 500;
+                ball.y = 200;
             }
             ball.direction = index === 0 ? 1 : -1;
+            ball.state = 'moving';
         }
 
         function draw() {
